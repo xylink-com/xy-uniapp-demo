@@ -1,0 +1,12 @@
+node_modules
+yarn-error.log
+.DS_Store
+.temp_cache
+.history
+libs/
+.vscode/
+dist/
+
+package/index.js.map
+package/index.js
+project.private.config.json
