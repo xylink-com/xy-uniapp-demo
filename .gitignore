@@ -7,6 +7,5 @@ libs/
 .vscode/
 dist/
 
-package/index.js.map
-package/index.js
 project.private.config.json
+project.config.json
