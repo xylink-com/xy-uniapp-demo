@@ -1,172 +1,288 @@
 <template>
   <view class="container">
-    <view class="meeting">
-      <div v-for="item in layout">
-        {{ item }}
-      </div>
+    <view class="title">示例SDK小程序</view>
+    <view class="version">{{ version }}</view>
+    <view @click="switchEnv" class="setting">设置</view>
+
+    <!-- Token登录 -->
+    <view class="form" v-if="loginMode === 'token'">
+      <view class="form-group">
+        <input
+          class="form-input"
+          id="token"
+          :value="token"
+          type="text"
+          @input="bindFromTokenInput"
+          placeholder="输入token"
+        />
+      </view>
+      <view class="from-group">
+        <button class="xy-primary-btn" type="button" @click="login">Token登录</button>
+      </view>
     </view>
 
-    <view class="footer">
-      <view class="btn" @click="login">登录</view>
-      <view class="btn" @click="makeCall">呼叫</view>
-      <view class="btn" @click="hangup">挂断</view>
+    <!-- SDK企业登录 -->
+    <view class="form" v-if="loginMode === 'sdk'">
+      <view class="form-group">
+        <input
+          class="form-input"
+          id="extUserId"
+          :value="externalLogin.extUserId"
+          type="text"
+          @input="bindFromExternalInput"
+          placeholder="输入三方UserId"
+        />
+      </view>
+      <view class="form-group">
+        <input
+          class="form-input"
+          id="displayName"
+          :value="externalLogin.displayName"
+          type="text"
+          @input="bindFromExternalInput"
+          placeholder="输入三方用户名"
+        />
+      </view>
+      <view class="from-group">
+        <button class="xy-primary-btn" type="button" @click="login">SDK企业登录</button>
+      </view>
+    </view>
+
+    <!-- 加入会议 -->
+    <view class="form">
+      <view class="form-group">
+        <input
+          class="form-input"
+          id="number"
+          :value="meeting.number"
+          type="text"
+          @input="bindFromInput"
+          placeholder="会议号"
+        />
+      </view>
+      <view class="form-group">
+        <input
+          class="form-input"
+          id="password"
+          :value="meeting.password"
+          type="text"
+          @input="bindFromInput"
+          placeholder="入会密码"
+        />
+      </view>
+      <view class="form-group">
+        <input
+          class="form-input"
+          id="name"
+          :value="meeting.name"
+          type="text"
+          @input="bindFromInput"
+          placeholder="入会名称"
+        />
+      </view>
+      <!-- 会议配置 -->
+      <view class="form-group">
+        <label class="form-checkbox">
+          <checkbox-group @change="changeVideo">
+            <checkbox value="1"  :checked="videoMute" />
+            入会时关闭摄像头
+          </checkbox-group>
+        </label>
+        <label class="form-checkbox">
+          <checkbox-group @change="changeAudio">
+            <checkbox value="1" :checked="audioMute" />
+            入会时静音
+          </checkbox-group>
+        </label>
+      </view>
+      <view class="form-group">
+        <button class="xy-primary-btn" type="button" @click="onJoinMeeting">立即入会</button>
+      </view>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue';
+import { ref, shallowRef, reactive } from 'vue';
 import XYRTC from '@xylink/xy-mp-sdk';
+import { DEFAULT_APPID, DEFAULT_EXTID, DEFAULT_SERVER } from '@/config';
+import { LoginExternalAccountParams } from '@/type';
+import { StatusInfo } from '@xylink/xy-mp-sdk/package/type';
+import { onLoad, onShow } from '@dcloudio/uni-app';
 
-const XYClient = ref<any>(null);
-const layout = ref([]);
-const isPushed = ref(false);
-const muted = ref(false);
-const pushUrl = ref('');
+const XYClient = shallowRef<XYRTC>();
+const version = ref('');
+const loginMode = ref('token');
+const token = ref('');
+const externalLogin = reactive<LoginExternalAccountParams>({ extUserId: '', displayName: '' });
+const meeting = reactive<Record<string, string>>({ number: '', password: '', name: '' });
+const videoMute = ref(false);
+const audioMute = ref(false);
 
-onMounted(() => {
-  // 初始化组件时，创建XYClient实例，并配置企业ID和小鱼SDK应用ID
-  XYClient.value = XYRTC.createClient({
-    extId: '3a90719f80c1df2b37214ec1cb4728f9ce041b5e',
-    appId: 'BJNNNNXNENNDT',
-  });
-  // 设置服务域名
-  XYClient.value.setServer('pretbmp.xylink.com');
+onLoad(() => {
+  const { version: sdkVersion, time } = XYRTC.version;
+  const versionText = `${sdkVersion} - build on ${time}`;
+  version.value = versionText;
 
-  console.log('XYClient: ', XYClient.value);
+  initSDK();
+});
 
-  // 调试用，放开SDK日志打印
-  XYClient.value.setDebug(true, true);
-  // 绑定监听事件
-  onRoomEvent();
+// 设置页面配置项可能改动，重新回到首页，重新初始化SDK
+onShow(() => {
+  loginMode.value = uni.getStorageSync('XY_LOGIN_MODE') || 'sdk';
+
+  initSDK();
 });
 
 /**
- * 绑定SDK事件
+ * 初始化SDK
  */
-const onRoomEvent = () => {
-  XYClient.value.on('roomEvent', async (e: any) => {
-    console.log('demo roomEvent: ', e);
-    const { type, detail } = e;
+const initSDK = async () => {
+  const server = uni.getStorageSync('XY_SERVER') || DEFAULT_SERVER;
+  const extId = uni.getStorageSync('XY_EXTID') || DEFAULT_EXTID;
+  const appId = uni.getStorageSync('XY_APPID') || DEFAULT_APPID;
 
-    switch (type) {
-      case 'connected': {
-        console.log('Demo get connected msg: ', detail);
+  //  [top, bottom, left , right]
+  const offset = [40, 40, 0, 0];
 
-        break;
-      }
-
-      case 'layout':
-        console.log('[component] layout:', detail);
-
-        layout.value = detail;
-
-        break;
-      case 'pushUrl':
-        console.log('[component] pushUrl:', detail);
-        const pusherUrl = detail;
-
-        pushUrl.value = pusherUrl;
-        await nextTick();
-
-        XYClient.value.startLivePusher(
-          () => {
-            console.log('start pusher success');
-
-            // 修复ios开启摄像头入会，关闭摄像头后，远端听不到声音问题
-            isPushed.value = true;
-          },
-          (err: any) => {
-            console.log('start pusher failed', err, 'warn');
-          }
-        );
-
-        break;
-      case 'audioStatus':
-        console.log('[component] audioStatus:', detail);
-
-        muted.value = detail;
-        break;
-      default: {
-        console.log('detail: ', detail);
-      }
-    }
+  XYClient.value = XYRTC.createClient({
+    extId,
+    appId,
+    container: {
+      offset,
+    },
   });
+
+  // 可选执行，设置SDK服务域名，默认可不需要调用
+  XYClient.value.setServer(server);
+
+  // 调试用，放开SDK日志打印
+  XYClient.value.setDebug(true, true);
 };
 
 /**
  * 登录
  */
 const login = async () => {
-  const res = await XYClient.value.loginExternalAccount({
-    extUserId: `${Math.ceil(Math.random() * 100000)}_${Math.ceil(Math.random() * 1000)}_SDK`,
-    displayName: 'mp888',
-  });
+  if (!XYClient.value) {
+    return;
+  }
 
-  console.log('login res: ', res);
+  // SDK企业账号登录
+  if (loginMode.value === 'sdk') {
+    const response = await XYClient.value.loginExternalAccount(externalLogin);
 
-  // 状态是200时，初始化登录成功
-  if (res.code === 'XYSDK:980200') {
-    // 登录成功后，开始加入会议...
-    XYClient.value.showToast('登录成功');
-  } else {
-    XYClient.value.showToast('登录失败，请检查');
+    onGetCallNumber(response);
+  } else if (loginMode.value === 'token') {
+    // Token登录号
+    // 此处第三方开发者需要自行与服务器交互，获取Token
+    // 具体参见接口文档： https://openapi.xylink.com/common/meeting/doc/miniprogram_server?platform=miniprogram
+    const response = await XYClient.value.login(token.value);
+
+    onGetCallNumber(response);
   }
 };
 
 /**
- * 呼叫
+ * 执行初始化登录回调函数
  */
-const makeCall = () => {
-  XYClient.value.makeCall(
-    {
-      number: 915353622534,
-      password: '',
-      displayName: 'uniapp',
-    },
-    (res: any) => {
-      console.log('makecall res: ', res);
-    }
-  );
+const onGetCallNumber = (response: StatusInfo) => {
+  console.log('login response:', response);
+  // 状态是200时，初始化登录成功
+  if (response.key === 'XYSDK:980200') {
+    const cn = response.data.callNumber;
+
+    uni.setStorageSync('XY_CALL_NUMBER', cn);
+
+    XYClient.value?.showToast('登录成功');
+  } else {
+    XYClient.value?.showToast('登录失败，请稍后重试');
+  }
 };
 
 /**
- * 挂断会议
+ * 加入会议
  */
-const hangup = () => {
-  XYClient.value.hangup();
+const onJoinMeeting = () => {
+  // 没有callNumber，则需要进行login操作
+  const callNumber = uni.getStorageSync('XY_CALL_NUMBER');
+
+  // 如果本地没有callNumber字段，则认为没有登录操作。需要提示进行初始化登录
+  if (!callNumber) {
+    XYClient.value?.showToast('请先登录');
+    return;
+  }
+
+  const { name, password, number } = meeting;
+
+  if (!number) {
+    XYClient.value?.showToast('会议号不能为空');
+    return;
+  }
+
+  uni.navigateTo({
+    url: `/pages/meeting/index?displayName=${name}&password=${password}&number=${number}&videoMute=${videoMute.value}&audioMute=${audioMute.value}`,
+  });
+};
+
+/**
+ * 切换环境
+ */
+const switchEnv = () => {
+  uni.navigateTo({ url: '/pages/setting/index' });
+};
+
+/**
+ * Token登录
+ */
+const bindFromTokenInput = (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  const { value } = target;
+
+  token.value = value;
+};
+
+/**
+ * SDK企业登录信息
+ */
+const bindFromExternalInput = (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  const { id, value } = target;
+
+  externalLogin[id as keyof LoginExternalAccountParams] = value;
+};
+
+/**
+ * 入会信息
+ */
+const bindFromInput = (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  const { id, value } = target;
+
+  meeting[id] = value;
+};
+
+/**
+ * 入会时是否开启摄像头
+ */
+const changeVideo = (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  const { value } = target;
+
+  videoMute.value = !!value[0];
+};
+
+/**
+ * 入会时是否开启麦克风
+ */
+const changeAudio = (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  const { value } = target;
+
+  audioMute.value = !!value[0];
 };
 </script>
 
-<style>
-.container {
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  background-color: #1f1f25;
-  color: #fff;
-}
-
-.footer {
-  position: fixed;
-  bottom: 0;
-  height: 40px;
-  width: 100vw;
-  overflow: hidden;
-  background-color: rgba(0, 0, 0, 0.8);
-
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  font-size: 12px;
-  z-index: 9;
-}
-
-.footer .btn {
-  min-width: 50px;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+<style scoped lang="scss">
+@import './index.scss';
 </style>

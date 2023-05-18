@@ -1,0 +1,41 @@
+@import '@/static/style/common.scss';
+
+.setting-container {
+  width: 100%;
+  padding: 0px 20px 20px;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+.setting-title {
+  font-size: 16px;
+  margin-top: 30px;
+}
+.form-input {
+  border: 1px solid #ddd;
+  font-size: 15px;
+  padding: 0 10rpx;
+  height: 80rpx;
+  margin: 10px 0 30px;
+}
+
+.form-audio {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 10px;
+  margin-right: 20px;
+}
+
+.from-audio-group {
+  display: flex;
+}
+
+.setting-btn {
+  margin-bottom: 10px;
+}
+
+.version {
+  width: 100%;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.6);
+  margin: 10px 0;
+}

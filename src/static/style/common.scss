@@ -1,0 +1,37 @@
+@import './var.scss';
+
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 50px 0;
+  box-sizing: border-box;
+}
+
+.xy-btn {
+  height: 48px;
+  line-height: 48px;
+  background: #fff;
+  color: $primary-color;
+  border-radius: 24px;
+  border: 1px solid $primary-color;
+  font-size: 16px;
+}
+
+.xy-primary-btn {
+  height: 48px;
+  line-height: 48px;
+  background: $primary-btn-color;
+  color: #fff;
+  font-size: 16px;
+}
+
+.xy-btn-active {
+  background: $primary-btn-color;
+}
+
+.xy-disabled-btn {
+  opacity: 0.3;
+}

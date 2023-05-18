@@ -1,0 +1,18 @@
+$primary-color: #3876ff;
+$normal-color: rgba(57, 57, 70, 1);
+$text-color: rgba(57, 57, 70, 0.8);
+$lighter-color: rgba(57, 57, 70, 0.6);
+$danger-color: #ff5252;
+$toolbar-bg: #202123;
+
+$primary-btn-color: linear-gradient(90deg, #69aeff 0%, $primary-color 100%);
+
+$header-height: 40PX;
+$footer-height: 40px;
+$toolbar-padding: 40PX;
+
+@mixin text-ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

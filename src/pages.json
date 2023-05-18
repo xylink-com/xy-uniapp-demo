@@ -4,7 +4,26 @@
       "path": "pages/index/index",
       "style": {
         "navigationBarTitleText": "小程序SDK示例程序",
+        "navigationBarBackgroundColor": "#000",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "path": "pages/meeting/index",
+      "style": {
+        "navigationBarTitleText": "",
+        "backgroundColor": "#1f1f25",
+        "disableScroll": true,
+        "navigationBarBackgroundColor": "#2b2b36",
+        "navigationBarTextStyle": "white",
         "pageOrientation": "landscape",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/setting/index",
+      "style": {
+        "navigationBarTitleText": "设置",
         "navigationBarBackgroundColor": "#000",
         "navigationBarTextStyle": "white"
       }
