@@ -15,7 +15,7 @@
 
     <!-- layout -->
     <view v-if="!loading" :hidden="onHold" class="xy__layout-container">
-      <view @click="onClickContent" class="xy__click-content" id="container">
+      <view class="xy__click-content" id="container">
         <view v-for="item in newLayout" :key="item.id">
           <!-- 本地端画面 -->
           <view
@@ -497,21 +497,13 @@ const operateAudio = () => {
 };
 
 /**
- * 点击
- */
-const onClickContent = () => {};
-
-/**
- * forceLayout
+ * 双击 forceLayout
+ *
  */
 const onFullScreenContent = (item: ILayout, event: any) => {
-  Event.click(
-    event,
-    () => {
-      XYClient.value?.handleFullScreen(item);
-    },
-    onClickContent
-  );
+  Event.click(event, () => {
+    XYClient.value?.handleFullScreen(item);
+  });
 };
 
 /**

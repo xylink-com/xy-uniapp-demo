@@ -7,7 +7,7 @@ interface EventClientParams {
 export const Event = {
   lastTapTime: 0,
   lastTapTimer: null,
-  click: function (params: EventClientParams, doubleClick: MPFunction, singleClick: MPFunction) {
+  click: function (params: EventClientParams, doubleClick?: MPFunction, singleClick?: MPFunction) {
     const currentTime = params.timeStamp;
     const lastTapTime = this.lastTapTime;
     this.lastTapTime = currentTime;
@@ -26,5 +26,3 @@ export const Event = {
     }
   },
 };
-
-
