@@ -11,5 +11,5 @@ export interface INewLayout extends ILayout {
   networkLevel?: number;
   audioImg?: string;
   avatar?: string;
-  networkLevelIcon?: string;
+  networkLevelImage?: string;
 }

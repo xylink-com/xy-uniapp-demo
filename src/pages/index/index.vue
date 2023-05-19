@@ -189,7 +189,7 @@ const login = async () => {
 const onGetCallNumber = (response: IStatus) => {
   console.log('login response:', response);
   // 状态是200时，初始化登录成功
-  if (response.code === 'XYSDK:980200') {
+  if (response.key === 'XYSDK:980200') {
     const cn = response.data.callNumber;
 
     uni.setStorageSync('XY_CALL_NUMBER', cn);

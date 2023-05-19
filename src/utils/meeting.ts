@@ -82,5 +82,5 @@ export const splitCallNumber = (callNumber = '') => {
 };
 
 export const getNetworkLevelImage = (networkLevel: number) => {
-  return `/static/images/icon_signal_${networkLevel}.png`;
+  return `/static/images/signal/icon_signal_${networkLevel}.png`;
 };

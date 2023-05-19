@@ -7,7 +7,7 @@
         <view class="xy__call-name">呼叫中...</view>
         <view class="xy__call-end" @click="hangup">
           <view class="xy__call-wrap-img">
-            <image :src="hangupIcon" class="img" />
+            <image src="/static/images/action_hangup.png" class="img" />
           </view>
         </view>
       </view>
@@ -42,7 +42,7 @@
 
             <view class="video-status">
               <image class="video-mute-icon" :src="localAudioImg" />
-              <image v-if="localNetworkLevel < 3" class="video-signal" :src="signal" />
+              <image class="video-signal" :src="signal" />
               <view class="video-member">{{ item.roster.displayName }}</view>
             </view>
 
@@ -79,7 +79,7 @@
 
             <view class="video-status">
               <image class="video-mute-icon" v-if="!item.roster.isContent" :src="item.audioImg" />
-              <image v-if="Number(item.networkLevel) < 3" class="video-signal" :src="item.networkLevelIcon" />
+              <image class="video-signal" :src="item.networkLevelImage" />
               <view class="video-member">
                 {{ item.roster.displayName }}
               </view>
@@ -128,19 +128,19 @@
       <!-- 下部的操作条 -->
       <view class="xy__operate xy__operate-left">
         <view :class="['xy__operate-btn', videoMute ? 'xy__operate-btn-disabled' : '']" @click="switchCamera">
-          <image class="icon" :src="switchIcon" />
+          <image class="icon" src="/static/images/icon_switch.png" />
           <view class="xy__operate-font">翻转</view>
         </view>
 
         <view class="xy__operate-btn" @click="operateAudio">
-          <image class="icon audio-icon" :src="audioMute ? audioMuteIcon : audioUnmuteIcon" />
+          <image class="icon" :src="localAudioImg" />
           <view class="xy__operate-font">
             {{ audioMute ? '取消静音' : '静音' }}
           </view>
         </view>
 
         <view class="xy__operate-btn" @click="operateVideo">
-          <image class="icon" :src="videoMute ? videoMuteIcon : videoUnMuteIcon" />
+          <image class="icon" :src="localVideoImg" />
           <view class="xy__operate-font">
             {{ videoMute ? '开启视频' : '关闭视频' }}
           </view>
@@ -183,10 +183,9 @@
 import { onLoad } from '@dcloudio/uni-app';
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import XYRTC from '@xylink/xy-mp-sdk';
-import { IBulkRoster, ILayout, MeetingInfo, IRosterObj, NetworkQualityLevel } from '@xylink/xy-mp-sdk/package/type';
+import { IBulkRoster, ILayout, MeetingInfo, IRosterObj } from '@xylink/xy-mp-sdk/package/type';
 import { Event } from '@/utils';
 import { getNetworkLevelImage, getDeviceAvatar } from '@/utils/meeting';
-import { audioUnmuteIcon, audioMuteIcon, videoMuteIcon, videoUnMuteIcon, switchIcon, hangupIcon } from './const';
 import { CUSTOM_TEMPLATE } from '@/utils/template';
 import { useTime } from '@/utils/useTime';
 import { INewLayout } from '@/type';
@@ -210,11 +209,16 @@ const pageOption = ref<any>({}); // 页面URL参数
 const connected = ref<boolean>(false); // 入会成功
 const meetingTime = useTime(connected); // 会议时间
 
-const localAudioImg = computed(() => (audioMute.value ? audioMuteIcon : audioUnmuteIcon));
+const localAudioImg = computed(() =>
+  audioMute.value ? '/static/images/audio_mute.png' : '/static/images/audio_unmute.png'
+);
+const localVideoImg = computed(() =>
+  videoMute.value ? '/static/images/video_mute.png' : '/static/images/video_unmute.png'
+);
 const signal = computed(() => getNetworkLevelImage(localNetworkLevel.value));
 const newLayout = computed(() => {
   const temp: INewLayout[] = layout.value.map((item: ILayout) => {
-    const audioImg = item.roster.audioTxMute ? audioMuteIcon : audioUnmuteIcon;
+    const audioImg = item.roster.audioTxMute ? '/static/images/audio_mute.png' : '/static/images/audio_unmute.png';
     const defaultAvatar = getDeviceAvatar(item.roster.deviceType);
     const avatar = item.avatar || defaultAvatar;
 
@@ -427,49 +431,49 @@ const disConnectMeeting = (detail: any) => {
  * live-pusher 状态变化事件
  */
 const onPusherStateChange = (e: any) => {
-  XYClient.value?.pusherEventHandler(e.mp);
+  XYClient.value?.pusherEventHandler(e);
 };
 
 /**
  * live-pusher 网络状态通知
  */
 const onPusherNetStatus = (e: any) => {
-  XYClient.value?.pusherNetStatusHandler(e.mp);
+  XYClient.value?.pusherNetStatusHandler(e);
 };
 
 /**
  * live-pusher 渲染错误事件
  */
 const onPusherError = (e: any) => {
-  XYClient.value?.pusherErrorHandler(e.mp);
+  XYClient.value?.pusherErrorHandler(e);
 };
 
 /**
  * live-pusher 返回麦克风采集的音量大小
  */
 const onPusherAudioVolumeNotify = (e: any) => {
-  XYClient.value?.pusherAudioVolumeNotify(e.mp);
+  XYClient.value?.pusherAudioVolumeNotify(e);
 };
 
 /**
  * live-player 播放状态变化事件
  */
 const onPlayStateChange = (e: any) => {
-  XYClient.value?.playerEventHandler(e.mp);
+  XYClient.value?.playerEventHandler(e);
 };
 
 /**
  * live-player 网络状态通知
  */
 const onPlayNetStatus = (e: any) => {
-  XYClient.value?.playNetStatusHandler(e.mp);
+  XYClient.value?.playNetStatusHandler(e);
 };
 
 /**
  * live-player 播放音量大小通知
  */
 const onPlayAudioVolumeNotify = (e: any) => {
-  XYClient.value?.playAudioVolumeNotify(e.mp);
+  XYClient.value?.playAudioVolumeNotify(e);
 };
 
 /**
