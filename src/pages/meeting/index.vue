@@ -18,12 +18,7 @@
       <view class="xy__click-content" id="container">
         <view v-for="item in newLayout" :key="item.id">
           <!-- 本地端画面 -->
-          <view
-            v-if="item.isPusher"
-            class="video video-1"
-            :style="item.style"
-            @click.stop="onFullScreenContent(item, $event)"
-          >
+          <view v-if="item.isPusher" class="video" :style="item.style" @click.stop="onFullScreenContent(item, $event)">
             <live-pusher
               v-if="pushUrl"
               id="pusher"
@@ -42,7 +37,7 @@
 
             <view class="video-status">
               <image class="video-mute-icon" :src="localAudioImg" />
-              <image class="video-signal" :src="signal" />
+              <image class="video-signal" v-if="localNetworkLevel < 3" :src="signal" />
               <view class="video-member">{{ item.roster.displayName }}</view>
             </view>
 
@@ -79,7 +74,11 @@
 
             <view class="video-status">
               <image class="video-mute-icon" v-if="!item.roster.isContent" :src="item.audioImg" />
-              <image class="video-signal" :src="item.networkLevelImage" />
+              <image
+                class="video-signal"
+                v-if="item.networkLevel && item.networkLevel < 3"
+                :src="item.networkLevelImage"
+              />
               <view class="video-member">
                 {{ item.roster.displayName }}
               </view>
@@ -208,6 +207,7 @@ const callNumber = ref(''); // 会议号
 const pageOption = ref<any>({}); // 页面URL参数
 const connected = ref<boolean>(false); // 入会成功
 const meetingTime = useTime(connected); // 会议时间
+const layoutMode = ref('auto');
 
 const localAudioImg = computed(() =>
   audioMute.value ? '/static/images/audio_mute.png' : '/static/images/audio_unmute.png'
@@ -243,14 +243,14 @@ onLoad(async (option) => {
 
   XYClient.value = XYRTC.getClient();
 
-  const layoutMode = uni.getStorageSync('XY_LAYOUT_MODE') || 'auto';
+  layoutMode.value = uni.getStorageSync('XY_LAYOUT_MODE') || 'auto';
   callNumber.value = uni.getStorageSync('XY_CALL_NUMBER');
 
   // 自定义布局，设置初始本地Local预览画面和启动推流
-  if (layoutMode === 'custom') {
+  if (layoutMode.value === 'custom') {
     // 初始页面加载时，获取本地Local数据，做首屏展示
 
-    XYClient.value?.setLayoutMode(layoutMode).updateTemplate([
+    XYClient.value?.setLayoutMode(layoutMode.value).updateTemplate([
       {
         // 最终转换为x: 0vw, y: 0vh, width: 100vw, height: 85vh
         position: [0, 0, 100, 85],
@@ -349,11 +349,10 @@ const initSDK = () => {
       case 'roster':
         roster.value = detail;
 
-        // if (this.data.template.layout !== 'custom') {
-        //   return;
-        // }
+        if (layoutMode.value === 'custom') {
+          handleCustomLayout(detail);
+        }
 
-        // handleCustomLayout(detail);
         break;
       // 权限被拒异常处理
       case 'permission':

@@ -143,7 +143,7 @@ const initSDK = async () => {
   const appId = uni.getStorageSync('XY_APPID') || DEFAULT_APPID;
 
   //  [top, bottom, left , right]
-  const offset = [40, 60, 0, 0];
+  const offset = [40, 40, 0, 0];
 
   XYClient.value = XYRTC.createClient({
     extId,

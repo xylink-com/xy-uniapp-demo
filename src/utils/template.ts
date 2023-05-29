@@ -2,6 +2,7 @@
  * 自定义布局-定义模版
  *
  * 宫格模式
+ * left top width height
  */
 export const CUSTOM_TEMPLATE: any = {
   1: {
