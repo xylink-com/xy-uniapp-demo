@@ -182,14 +182,12 @@
 import { onLoad } from '@dcloudio/uni-app';
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import XYRTC from '@xylink/xy-mp-sdk';
-import { IBulkRoster, ILayout, MeetingInfo, IRosterObj } from '@xylink/xy-mp-sdk/package/type';
 import { Event } from '@/utils';
 import { getNetworkLevelImage, getDeviceAvatar } from '@/utils/meeting';
 import { CUSTOM_TEMPLATE } from '@/utils/template';
 import { useTime } from '@/utils/useTime';
-import { INewLayout } from '@/type';
 
-const XYClient = ref<XYRTC>();
+const XYClient = ref<any>();
 const loading = ref(true);
 const pushUrl = ref(''); // 推流地址
 const isPushed = ref(false); // 是否已完成推流
@@ -199,10 +197,10 @@ const localNetworkLevel = ref(4); // 本地网络信号等级
 const remoteNetworkLevel = ref<Record<string, number>>({}); // 远端网络信号等级
 const onHold = ref(false); // 是否在等候室
 const isShowDetected = ref(false);
-const roster = ref<IRosterObj>(); // 会中roster信息
-const layout = ref<ILayout[]>([]); // 布局对象
-const meetingInfo = ref<MeetingInfo>({}); // 会议信息
-const bulkRoster = ref<IBulkRoster[]>([]); // 会中所有终端信息
+const roster = ref<any>(); // 会中roster信息
+const layout = ref<any[]>([]); // 布局对象
+const meetingInfo = ref<any>({}); // 会议信息
+const bulkRoster = ref<any[]>([]); // 会中所有终端信息
 const callNumber = ref(''); // 会议号
 const pageOption = ref<any>({}); // 页面URL参数
 const connected = ref<boolean>(false); // 入会成功
@@ -217,7 +215,7 @@ const localVideoImg = computed(() =>
 );
 const signal = computed(() => getNetworkLevelImage(localNetworkLevel.value));
 const newLayout = computed(() => {
-  const temp: INewLayout[] = layout.value.map((item: ILayout) => {
+  const temp: any[] = layout.value.map((item: any) => {
     const audioImg = item.roster.audioTxMute ? '/static/images/audio_mute.png' : '/static/images/audio_unmute.png';
     const defaultAvatar = getDeviceAvatar(item.roster.deviceType);
     const avatar = item.avatar || defaultAvatar;
@@ -503,7 +501,7 @@ const operateAudio = () => {
  * 双击 forceLayout
  *
  */
-const onFullScreenContent = (item: ILayout, event: any) => {
+const onFullScreenContent = (item: any, event: any) => {
   Event.click(event, () => {
     XYClient.value?.handleFullScreen(item);
   });
@@ -583,7 +581,7 @@ const exitRoom = (msg = '') => {
 /**
  * 自定义布局，处理模板计算
  */
-const handleCustomLayout = (detail: IRosterObj) => {
+const handleCustomLayout = (detail: any) => {
   // 处理custom模式自定义布局
   const newDetails = [];
   // 获取roster数据
@@ -602,7 +600,7 @@ const handleCustomLayout = (detail: IRosterObj) => {
     isContent: false,
   };
 
-  roster.forEach((item, index) => {
+  roster.forEach((item: any, index: any) => {
     newDetails.push({
       position: CUSTOM_TEMPLATE[len].other[index].position,
       callNumber: item.callNumber,

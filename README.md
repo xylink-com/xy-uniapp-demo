@@ -1,7 +1,26 @@
 # xy-uniapp-demo
 
-小程序SDK Uni App非UI框架集成测试
+小程序 SDK Uni App 非 UI 框架测试 Demo
 
+## 准备
+
+```bash
+$ yarn
+```
+
+## 开发
+
+```bash
+$ yarn dev
+```
+
+启动后，会在更目录生成 `dist/dev/mp-weixin` 目录，使用微信开发工具打开即可；
+
+## 构建
+
+```bash
+$ yarn build
+```
 
 ## 文档
 

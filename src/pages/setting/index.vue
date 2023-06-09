@@ -64,7 +64,7 @@ const loginModes = [
   },
 ];
 
-const XYClient = shallowRef<XYRTC>();
+const XYClient = shallowRef<any>();
 const versionText = ref('');
 const setting = reactive<Record<string, string>>({
   server: DEFAULT_SERVER,

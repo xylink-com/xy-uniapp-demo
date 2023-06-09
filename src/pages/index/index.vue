@@ -107,10 +107,9 @@ import { ref, shallowRef, reactive } from 'vue';
 import XYRTC from '@xylink/xy-mp-sdk';
 import { DEFAULT_APPID, DEFAULT_EXTID, DEFAULT_SERVER } from '@/config';
 import { LoginExternalAccountParams } from '@/type';
-import { IStatus } from '@xylink/xy-mp-sdk/package/type';
 import { onLoad, onShow } from '@dcloudio/uni-app';
 
-const XYClient = shallowRef<XYRTC>();
+const XYClient = shallowRef<any>();
 const version = ref('');
 const loginMode = ref('token');
 const token = ref('');
@@ -186,10 +185,10 @@ const login = async () => {
 /**
  * 执行初始化登录回调函数
  */
-const onGetCallNumber = (response: IStatus) => {
+const onGetCallNumber = (response: any) => {
   console.log('login response:', response);
   // 状态是200时，初始化登录成功
-  if (response.key === 'XYSDK:980200') {
+  if (response.code === 'XYSDK:980200' || response.code === 200) {
     const cn = response.data.callNumber;
 
     uni.setStorageSync('XY_CALL_NUMBER', cn);

@@ -1,5 +1,3 @@
-import { ILayout } from '@xylink/xy-mp-sdk/package/type';
-
 export type MPFunction = (...args: any[]) => any;
 
 export interface LoginExternalAccountParams {
@@ -7,7 +5,7 @@ export interface LoginExternalAccountParams {
   displayName: string;
 }
 
-export interface INewLayout extends ILayout {
+export interface INewLayout {
   networkLevel?: number;
   audioImg?: string;
   avatar?: string;
