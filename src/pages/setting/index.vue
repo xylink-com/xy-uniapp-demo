@@ -39,7 +39,7 @@
 
 <script setup lang="ts">
 import { ref, shallowRef, reactive } from 'vue';
-import XYRTC from '@xylink/xy-mp-sdk';
+import XYRTC from '@/wxcomponents/@xylink/xy-mp-sdk';
 import { onLoad } from '@dcloudio/uni-app';
 import { DEFAULT_APPID, DEFAULT_SERVER, DEFAULT_EXTID } from '@/config';
 

@@ -8,4 +8,5 @@ declare module '*.vue' {
 }
 
 
-declare module '@xylink/xy-mp-sdk'
+// declare module '@xylink/xy-mp-sdk'
+declare module '@/wxcomponents/@xylink/xy-mp-sdk'

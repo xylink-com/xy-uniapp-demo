@@ -1,11 +1,45 @@
 # xy-uniapp-demo
 
-小程序 SDK Uni App 非 UI 框架测试 Demo
+小程序 SDK Uni App UI 框架测试 Demo
 
 ## 准备
+1. 安装依赖
 
 ```bash
 $ yarn
+```
+2. 将@xylink/xy-mp-sdk复制到src/wxcomponents, 具体可参考uni-app官网[小程序自定义组件支持](https://zh.uniapp.dcloud.io/tutorial/miniprogram-subject.html#)
+
+```bash
+$ yarn copy
+```
+3. 将src/wxcomponents/@xylink/xy-mp-sdk 转换为 ES 模块, 在vite.config.js中配置
+
+```bash
+
+import commonjs from '@rollup/plugin-commonjs';
+
+const extensions = ['.js'];
+
+export default defineConfig({
+  plugins: [
+    uni(),
+    // 将CommonJS转换为ES模块
+    commonjs({
+      extensions,
+    }),
+  ]
+});
+
+```
+4. 在pages.json中配置usingComponents，建议将其配置在globalStyle中
+
+```bash
+
+"usingComponents": {
+    "xylink-room": "/wxcomponents/@xylink/xy-mp-sdk/package/component/index"
+ }
+
 ```
 
 ## 开发

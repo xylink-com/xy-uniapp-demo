@@ -104,7 +104,7 @@
 
 <script setup lang="ts">
 import { ref, shallowRef, reactive } from 'vue';
-import XYRTC from '@xylink/xy-mp-sdk';
+import XYRTC from '@/wxcomponents/@xylink/xy-mp-sdk';
 import { DEFAULT_APPID, DEFAULT_EXTID, DEFAULT_SERVER } from '@/config';
 import { LoginExternalAccountParams } from '@/type';
 import { onLoad, onShow } from '@dcloudio/uni-app';
@@ -114,9 +114,10 @@ const version = ref('');
 const loginMode = ref('token');
 const token = ref('');
 const externalLogin = reactive<LoginExternalAccountParams>({ extUserId: '', displayName: '' });
-const meeting = reactive<Record<string, string>>({ number: '', password: '', name: '' });
+const meeting = reactive<Record<string, string>>({ number: '9006971074', password: '', name: 'abc' });
 const videoMute = ref(false);
 const audioMute = ref(false);
+
 
 onLoad(() => {
   const { version: sdkVersion, time } = XYRTC.version;
@@ -128,6 +129,7 @@ onLoad(() => {
 
 // 设置页面配置项可能改动，重新回到首页，重新初始化SDK
 onShow(() => {
+
   loginMode.value = uni.getStorageSync('XY_LOGIN_MODE') || 'sdk';
 
   initSDK();

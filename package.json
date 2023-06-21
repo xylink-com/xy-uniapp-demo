@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "uni -p mp-weixin",
-    "build": "uni build -p mp-weixin"
+    "build": "uni build -p mp-weixin",
+    "copy": "node scripts/copy"
   },
   "dependencies": {
     "@dcloudio/uni-app": "3.0.0-alpha-3071320230411001",
@@ -19,7 +20,8 @@
     "@dcloudio/uni-mp-toutiao": "3.0.0-alpha-3071320230411001",
     "@dcloudio/uni-mp-weixin": "3.0.0-alpha-3071320230411001",
     "@dcloudio/uni-quickapp-webview": "3.0.0-alpha-3071320230411001",
-    "@xylink/xy-mp-sdk": "3.8.6",
+    "@rollup/plugin-commonjs": "^25.0.2",
+    "@xylink/xy-mp-sdk": "3.8.7-beta.11",
     "sass": "^1.62.1",
     "vue": "^3.2.45",
     "vue-i18n": "^9.1.9"
@@ -30,6 +32,9 @@
     "@dcloudio/uni-cli-shared": "3.0.0-alpha-3071320230411001",
     "@dcloudio/uni-stacktracey": "3.0.0-alpha-3071320230411001",
     "@dcloudio/vite-plugin-uni": "3.0.0-alpha-3071320230411001",
+    "copy-webpack-plugin": "^11.0.0",
+    "fs-extra": "^11.1.1",
+    "rollup-plugin-commonjs": "^10.1.0",
     "sass-loader": "10.2.0",
     "scss": "^0.2.4",
     "typescript": "^4.8.4",
