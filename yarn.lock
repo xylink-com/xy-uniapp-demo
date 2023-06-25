@@ -2329,8 +2329,8 @@
 
 "@xylink/xy-mp-sdk@3.8.7-beta.11":
   version "3.8.7-beta.11"
-  resolved "https://fe-private-npm.xylink.com/@xylink%2fxy-mp-sdk/-/xy-mp-sdk-3.8.7-beta.11.tgz#4e8eb0621a610effcea5e74ed9ec6edcda59e858"
-  integrity sha512-jawcDkbAbBOz8YT+0/ZQZOLU0h8O0r45Ns2liVKPFcJRJvuAk/aKh7phqaEUpnRZhKkKCwuWC9jZcBoSYSksxg==
+  resolved "https://fe-private-npm.xylink.com/@xylink%2fxy-mp-sdk/-/xy-mp-sdk-3.8.7-beta.11.tgz#ed793974b42c561c31ddf46521ae42c741c8a9ff"
+  integrity sha512-yhUgEtd4et8EQAEyw//vhPk7RtkFmyp5jWgjOJT4Hnp6FRyJ/p/zSmn8aDzCdICtEqJo+a08uaDhIvWH0gqDvg==
   dependencies:
     jszip "3.5.0"
 

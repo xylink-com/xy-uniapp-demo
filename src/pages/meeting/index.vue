@@ -21,7 +21,7 @@
         :muted="audioMute"
         :camera="!videoMute"
         :devicePosition="devicePosition"
-        id="xylink"
+        ref="xyRoom"
         @onRoomEvent="onRoomEvent"
       />
 
