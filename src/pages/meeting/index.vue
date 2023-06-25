@@ -13,54 +13,56 @@
       </view>
     </view>
 
-    <!-- 小鱼小程序SDK UI组件 -->
-    <xylink-room
-      :template="template"
-      :beauty="6"
-      :muted="audioMute"
-      :camera="!videoMute"
-      :devicePosition="devicePosition"
-      id="xylink"
-      @onRoomEvent="onRoomEvent"
-    />
+    <view :hidden="onHold">
+      <!-- 小鱼小程序SDK UI组件 -->
+      <xylink-room
+        :template="template"
+        :beauty="6"
+        :muted="audioMute"
+        :camera="!videoMute"
+        :devicePosition="devicePosition"
+        id="xylink"
+        @onRoomEvent="onRoomEvent"
+      />
 
-    <!-- 操作条 -->
-    <view class="xy__operate-container" v-if="!loading && !onHold">
-      <!-- 下部的操作条 -->
-      <view class="xy__operate xy__operate-left">
-        <view :class="['xy__operate-btn', videoMute ? 'xy__operate-btn-disabled' : '']" @click="switchCamera">
-          <image class="icon" src="/static/images/icon_switch.png" />
-          <view class="xy__operate-font">翻转</view>
-        </view>
-
-        <view class="xy__operate-btn" @click="operateAudio">
-          <image class="icon" :src="localAudioImg" />
-          <view class="xy__operate-font">
-            {{ audioMute ? '取消静音' : '静音' }}
+      <!-- 操作条 -->
+      <view class="xy__operate-container" v-if="!loading && !onHold">
+        <!-- 下部的操作条 -->
+        <view class="xy__operate xy__operate-left">
+          <view :class="['xy__operate-btn', videoMute ? 'xy__operate-btn-disabled' : '']" @click="switchCamera">
+            <image class="icon" src="/static/images/icon_switch.png" />
+            <view class="xy__operate-font">翻转</view>
           </view>
-        </view>
 
-        <view class="xy__operate-btn" @click="operateVideo">
-          <image class="icon" :src="localVideoImg" />
-          <view class="xy__operate-font">
-            {{ videoMute ? '开启视频' : '关闭视频' }}
+          <view class="xy__operate-btn" @click="operateAudio">
+            <image class="icon" :src="localAudioImg" />
+            <view class="xy__operate-font">
+              {{ audioMute ? '取消静音' : '静音' }}
+            </view>
           </view>
+
+          <view class="xy__operate-btn" @click="operateVideo">
+            <image class="icon" :src="localVideoImg" />
+            <view class="xy__operate-font">
+              {{ videoMute ? '开启视频' : '关闭视频' }}
+            </view>
+          </view>
+
+          <view class="xy__operate-end" @click="hangup"> 挂断 </view>
         </view>
 
-        <view class="xy__operate-end" @click="hangup"> 挂断 </view>
-      </view>
+        <!-- 上部操作条 -->
+        <view class="xy__operate xy__operate-right">
+          <view class="xy__operate-signal">
+            <image :src="signal" />
+          </view>
 
-      <!-- 上部操作条 -->
-      <view class="xy__operate xy__operate-right">
-        <view class="xy__operate-signal">
-          <image :src="signal" />
-        </view>
+          <MeetingTime :start="connected"></MeetingTime>
 
-        <view class="xy__operate-time"> {{ meetingTime }} </view>
-
-        <view class="xy__operate-btn xy__operate-info">
-          <view class="xy__operate-number">
-            {{ meetingInfo.callNumber }}
+          <view class="xy__operate-btn xy__operate-info">
+            <view class="xy__operate-number">
+              {{ meetingInfo.callNumber }}
+            </view>
           </view>
         </view>
       </view>
@@ -84,10 +86,10 @@
 import { onLoad } from '@dcloudio/uni-app';
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import XYRTC from '@/wxcomponents/@xylink/xy-mp-sdk';
-import { Event } from '@/utils';
 import { getNetworkLevelImage, getDeviceAvatar } from '@/utils/meeting';
 import { CUSTOM_TEMPLATE } from '@/utils/template';
-import { useTime } from '@/utils/useTime';
+// @ts-ignore
+import MeetingTime from './meetingTime.vue';
 
 const XYClient = ref<any>();
 const loading = ref(true);
@@ -97,11 +99,9 @@ const onHold = ref(false); // 是否在等候室
 const roster = ref<any>(); // 会中roster信息
 const layout = ref<any[]>([]); // 布局对象
 const meetingInfo = ref<any>({}); // 会议信息
-const bulkRoster = ref<any[]>([]); // 会中所有终端信息
 const callNumber = ref(''); // 会议号
 const pageOption = ref<any>({}); // 页面URL参数
 const connected = ref<boolean>(false); // 入会成功
-const meetingTime = useTime(connected); // 会议时间
 const layoutMode = ref('auto');
 const template = ref({
   layout: layoutMode,
@@ -139,17 +139,19 @@ onLoad(async (option) => {
   // 自定义布局，设置初始本地Local预览画面和启动推流
   if (layoutMode.value === 'custom') {
     // 初始页面加载时，获取本地Local数据，做首屏展示
-
-    XYClient.value?.setLayoutMode(layoutMode.value).updateTemplate([
-      {
-        // 最终转换为x: 0vw, y: 0vh, width: 100vw, height: 85vh
-        position: [0, 0, 100, 85],
-        callNumber: callNumber.value,
-        name: displayName,
-        quality: 'normal',
-        isContent: false,
-      },
-    ]);
+    template.value = {
+      layout: layoutMode.value,
+      detail: [
+        {
+          // 最终转换为x: 0vw, y: 0vh, width: 100vw, height: 85vh
+          position: [0, 0, 100, 85],
+          callNumber: callNumber.value,
+          name: displayName,
+          quality: 'normal',
+          isContent: false,
+        },
+      ],
+    };
   }
 });
 
@@ -171,7 +173,7 @@ onMounted(async () => {
 });
 
 onBeforeUnmount(() => {
-  XYClient.value?.hangup('');
+  XYClient.value?.hangup();
 });
 
 const onRoomEvent = (event: any) => {
@@ -213,10 +215,6 @@ const onRoomEvent = (event: any) => {
     // 推送实时麦克风状态，最新的麦克风状态请以此为准
     case 'audioStatus':
       audioMute.value = detail;
-      break;
-    // 会中所有终端信息
-    case 'bulkRoster':
-      bulkRoster.value = detail;
       break;
     case 'networkParameter':
       console.log('networkParameter::', detail);
@@ -261,6 +259,8 @@ const connectMeeting = () => {
  * 退出会议界面
  */
 const hangup = () => {
+  XYClient.value?.hangup();
+
   uni.navigateBack({ delta: 1 });
 };
 
