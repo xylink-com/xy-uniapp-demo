@@ -21,7 +21,7 @@
     "@dcloudio/uni-mp-weixin": "3.0.0-alpha-3071320230411001",
     "@dcloudio/uni-quickapp-webview": "3.0.0-alpha-3071320230411001",
     "@rollup/plugin-commonjs": "^25.0.2",
-    "@xylink/xy-mp-sdk": "3.8.7-beta.11",
+    "@xylink/xy-mp-sdk": "3.9.0",
     "sass": "^1.62.1",
     "vue": "^3.2.45",
     "vue-i18n": "^9.1.9"
